@@ -1,0 +1,102 @@
+Yianna Bekris
+RCES Assignment 1
+
+1) Number of earthquakes: cat signif.txt.tsv | wc -l
+5959 so I think there are 5958 earthquakes because the first row looks like column names
+2) Number of columns: awk '{print NF}' signif.txt.tsv | sort -nu | tail -n 1
+47 
+3) Cut and create new file 
+YEAR is the 3rd column
+EQ_PRIMARY is the 10th column
+COUNTRY is the 18th column
+cut -f 3,10,18 signif.txt.tsv >> Year_Mag_Country.tsv
+4) Top 10 highest magnitude earthquakes
+sort -k 2 Year_Mag_Country.tsv
+1965	 8.7	USA
+2010	 8.8	CHILE
+1716	 8.8	PERU
+1812	 8.8	USA
+1952	 9.0	RUSSIA
+1700	 9.0	USA
+2004	 9.1	INDONESIA
+2011	 9.1	JAPAN
+1964	 9.2	USA
+1960	 9.5	CHILE
+5) How many unique countries are listed in the database? Use cut,sort,uniq, wc and a few pipes | to form a single expression that answers this question.
+cut -f 3 Year_Mag_Country.tsv | sort | uniq | wc 
+Prints:     154     213    1606 This means there are 154 unique countries in the database
+6) Use the grep command to count how many earthquakes in the database are located in the USA or USA TERRITORY
+grep -c  USA Year_Mag_Country.tsv
+294
+7) Modified to just USA 
+grep -v -c  USA Year_Mag_Country.tsv          
+5665
+grep -v -c  "USA TERRITORY" Year_Mag_Country.tsv
+5920
+5920 - 5665 = 255 
+8) cut -f 3 Year_Mag_Country.tsv | sort | uniq -c | sort -nr -k1,1 | head -n 10
+ 579 CHINA
+ 400 JAPAN
+ 365 IRAN
+ 363 INDONESIA
+ 324 ITALY
+ 319 TURKEY
+ 259 GREECE
+ 255 USA
+ 207 PHILIPPINES
+ 193 MEXICO
+9) I did this first with the $1 argument. That script is:
+#!/bin/bash
+
+count=$(grep -i -c "$1" Year_Mag_Country.tsv)
+
+echo "Earthquakes in $1: $count"
+
+# You call it like this:
+bash countEq.sh USA
+Earthquakes in USA: 294
+
+I wanted to create a more interactive script that you can enter a country (case insensitive) and it will tell you the count. If the country doesn't exist, it will just return 0.
+
+touch countEq.sh 
+
+## Here's an example
+#!/bin/bash
+
+echo "Please enter a country: "
+read country
+
+count=$(grep -i -c "$country" Year_Mag_Country.tsv)
+
+echo "Earthquakes in $country: $count"
+
+Please enter a country: 
+CHina
+Earthquakes in CHina: 579
+
+10) Following the original instructions to use $1 for this one:
+
+#!/bin/bash
+
+count=$(grep -i -c "$1" Year_Mag_Country.tsv)
+largest=$(grep -i "$1" Year_Mag_Country.tsv | sort -nr -k2,2 | head -n 1)
+
+echo "Earthquakes in $1: $count"
+echo "Largest earthquake in $1: $largest"
+
+bash countEq_getLargestEq.sh CHILE
+Earthquakes in CHILE: 192
+Largest earthquake in CHILE: 1960	 9.5	CHILE 
+
+11) Top 10 years by number of earthquakes
+cut -f 1 Year_Mag_Country.tsv | sort | uniq -c | sort -nr | head -n 10
+  78 2004
+  77 2008
+  72 2003
+  67 2007
+  62 2010
+  61 2006
+  60 2009
+  60 2005
+  60 2002
+  59 2011
