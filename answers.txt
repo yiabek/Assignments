@@ -3,7 +3,7 @@ RCES Assignment 1
 
 1) Number of earthquakes: cat signif.txt.tsv | wc -l
 5959 so I think there are 5958 earthquakes because the first row looks like column names
-2) Number of columns: awk '{print NF}' signif.txt.tsv | sort -nu | tail -n 1
+2) Number of columns: head -1 signif.txt.tsv | tr '|' ' ' | wc -w
 47 
 3) Cut and create new file 
 YEAR is the 3rd column
